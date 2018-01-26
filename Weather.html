@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Geo Location Data</title>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="Weather.css">
+	<script>
+		$(document).ready(function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					var lat = position.coords.latitude;
+					var lon = position.coords.longitude;
+
+					var fcclink =
+					"https://fcc-weather-api.glitch.me/api/current?lat=" +
+					lat +
+					"&lon=" +
+					lon;
+
+					$.getJSON(fcclink, function(data) {
+						$("#loc").append(data.name + ", " + data.sys.country);
+						$("#temperature").html(data.main.temp + "&#8451;");
+
+						$("#temperature").click(function() {
+							var clicks = $(this).data("clicks");
+							var far = data.main.temp * 1.8 + 32;
+							if (clicks) {
+								$("#temperature").html(data.main.temp + "&#8451;");
+							} else {
+								$("#temperature").html(far + "&#8457;");
+							}
+							$(this).data("clicks", !clicks);
+						});
+
+						$("#weather").html("<em>"+ data.weather[0].main +"</em>");
+						var srclink = "<img src='" + data.weather[0].icon + "' alt = 'Icon'>";
+						$("#icon").html(srclink);
+
+					});
+				});
+			} else {
+				console.log("Location not obtained.");
+			}
+		});
+	</script>
+</head>
+<body>
+	<div id="weather-page">
+		<h1 class="page-header">Local weather forecast</h1>
+		<h3 id="loc"></h3>
+		<button class="btn btn-primary" id="temperature"></button>
+		<div id="box">
+			<h3 id="weather"></h3>
+			<div id="icon"></div>
+		</div>
+	</div>
+</body>
+</html>
